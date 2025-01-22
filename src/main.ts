@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 import path from 'path';
 import started from 'electron-squirrel-startup';
 
@@ -9,14 +9,24 @@ if (started) {
 
 const createWindow = () => {
   // Create the browser window.
+  const {width:screenWidth,height:screenHeight} = screen.getPrimaryDisplay().workAreaSize;
+  const windowWidth = 380;
+   const windowHeight = 500;
+   const x = screenWidth - windowWidth;
+   const y = screenHeight - windowHeight;
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: windowWidth,
+    height: windowHeight,
+    frame:false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    minimizable:false,
   });
-
+  setInterval(()=>{
+    mainWindow.setAlwaysOnTop(true,"screen-saver",1)
+   },500)
+    mainWindow.setPosition(x,y)
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -24,8 +34,6 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
