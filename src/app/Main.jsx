@@ -1,10 +1,15 @@
 import React from 'react'
+import Navbar from './component/Navbar'
+import Messagearea from './component/Messagearea'
+import Textbox from './component/Textbox'
 
 const Main = () => {
   return (
-    <div>
-        
-    </div>
+    <>
+        <Navbar/>
+        <Messagearea/>
+        <Textbox/>
+    </>
   )
 }
 
