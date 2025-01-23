@@ -1,0 +1,10 @@
+{
+  "config": [
+    {
+      "position-x": "left",
+      "position-y": "top",
+      "width": 380,
+      "height": 500
+    }
+  ]
+}

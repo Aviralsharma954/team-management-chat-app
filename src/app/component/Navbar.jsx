@@ -1,6 +1,6 @@
 import { ArrowDownUp, ArrowLeft, ArrowLeftRight, Moon, Sun, ChevronRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-
+import fs from 'fs';
 const Navbar = () => {
   const [isDark, setIsDark] = useState(false);
 
@@ -17,6 +17,10 @@ const Navbar = () => {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  const toggleWindowPosition = (direction) => {
+      fetch(`http://localhost:3000/config/${direction}`)
+  };
+
   return (
     <div className="navbar">
       <div className="flex gap-2 m-2">
@@ -24,8 +28,8 @@ const Navbar = () => {
         <h2 className="text-md font-semibold font-sans">Conference Meeting</h2>
         <div className="self-center bg-secondary rounded-full pl-2 p-1 pr-2 text-sm font-semibold text-secondary">4h left</div>
         <div className="absolute right-0 mr-2 flex gap-2 bg-secondary rounded-full pl-2 p-1 pr-2">
-          <ArrowLeftRight className="text-secondary cursor-pointer"/>
-          <ArrowDownUp className="text-secondary cursor-pointer"/>
+          <ArrowLeftRight className="text-secondary cursor-pointer" onClick={() => toggleWindowPosition('left-right')} />
+          <ArrowDownUp className="text-secondary cursor-pointer" onClick={() => toggleWindowPosition('top-bottom')} />
           {isDark ? (
             <Moon className="text-blue-500 cursor-pointer" onClick={toggleTheme} />
           ) : (
