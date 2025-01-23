@@ -7,8 +7,13 @@
   --bg-secondary: #f3f4f6;
   --text-primary: #111827;
   --text-secondary: #4b5563;
-  --navbar-bg: rgba(255, 255, 255, 0.14);
-  --border-color: rgba(255, 255, 255, 0.3);
+  --navbar-bg: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --message-sent: rgba(59, 130, 246, 0.1);
+  --message-received: rgba(243, 244, 246, 0.8);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --text-input: #111827;
+  --text-placeholder: #6b7280;
 }
 
 [data-theme='dark'] {
@@ -18,6 +23,11 @@
   --text-secondary: #a3a3a3;
   --navbar-bg: rgba(0, 0, 0, 0.14);
   --border-color: rgba(255, 255, 255, 0.1);
+  --message-sent: rgba(255, 255, 255, 0.1);
+  --message-received: rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(255, 255, 255, 0.1);
+  --text-input: #ffffff;
+  --text-placeholder: #9ca3af;
 }
 
 body {
@@ -31,4 +41,58 @@ body {
   backdrop-filter: blur(8.6px);
   -webkit-backdrop-filter: blur(8.6px);
   border: 1px solid var(--border-color);
+}
+
+/* Add these styles for glassmorphic effect */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Enhanced glassmorphic effects */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Customize scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Improved scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Message animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flex-col > div {
+  animation: fadeIn 0.3s ease-out forwards;
 }

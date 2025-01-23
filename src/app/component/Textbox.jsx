@@ -1,17 +1,48 @@
-import { PaperclipIcon, Plus } from 'lucide-react'
-import React from 'react'
+import { PaperclipIcon, Plus, Send } from 'lucide-react'
+import React, { useState } from 'react'
 
 const Textbox = () => {
+  const [message, setMessage] = useState('');
+
+  const handleSend = () => {
+    if (message.trim()) {
+      console.log('Sending:', message);
+      setMessage('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className="flex justify-end items-center w-full absolute bottom-0">
-      <div className=" h-16 bg-gray-300 m-2 w-full rounded-lg">
-        <input type="text" className=" flex bg-gray-300 focus:outline-none placeholder:text-gray-500 m-1 w-[90%]" placeholder="Type your message.." />
-        <div className="flex gap-2 m-1 relative">
-            <div className="bg-gray-100 w-min text-gray-500 rounded-sm"><Plus/></div>
-            <PaperclipIcon className=" text-gray-400"/>
-            <div className=" absolute right-0 mr-1 rounded-md pr-2 pl-2 bg-gray-950 cursor-pointer text-gray-100 p-1 bottom-0">
-                <div>Send now</div>
-            </div>
+    <div className="flex justify-end items-center w-full fixed bottom-0 p-4 bg-gradient-to-t from-[var(--bg-secondary)] to-transparent">
+      <div className="h-14 w-full rounded-full backdrop-blur-md bg-[var(--input-bg)] shadow-sm border border-[var(--border-color)] flex items-center">
+        <input 
+          type="text" 
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
+          className="flex bg-transparent focus:outline-none placeholder:text-[var(--text-placeholder)] text-[var(--text-input)] px-4 w-full"
+          placeholder="Type your message..." 
+        />
+        <div className="flex gap-1 items-center px-2">
+          <button className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+            <Plus size={18} className="text-[var(--text-secondary)]"/>
+          </button>
+          <button className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+            <PaperclipIcon size={18} className="text-[var(--text-secondary)]"/>
+          </button>
+          <button 
+            onClick={handleSend}
+            disabled={!message.trim()}
+            className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-full p-2 transition-all ml-1"
+          >
+            <Send size={18} />
+          </button>
         </div>
       </div>
     </div>
