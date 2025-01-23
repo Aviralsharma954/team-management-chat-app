@@ -1,5 +1,6 @@
 import { PaperclipIcon, Plus, Send } from 'lucide-react'
 import React, { useState } from 'react'
+import { socket } from '../socket';
 
 const Textbox = () => {
   const [message, setMessage] = useState('');
@@ -7,6 +8,11 @@ const Textbox = () => {
   const handleSend = () => {
     if (message.trim()) {
       console.log('Sending:', message);
+      if(message){
+        const UserId = localStorage.getItem("user");
+        const data = {"user":UserId,"message":message}
+        socket.send(JSON.stringify(data));
+      }
       setMessage('');
     }
   };
