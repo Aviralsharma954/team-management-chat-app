@@ -24,7 +24,13 @@ if (started) {
       preload: path.join(__dirname, 'preload.js'),
     },
     minimizable: false,
+    resizable: false,
   });
+  
+  // Lock window size
+  mainWindow.setMinimumSize(windowWidth, windowHeight);
+  mainWindow.setMaximumSize(windowWidth, windowHeight);
+
   mainWindow.webContents.openDevTools();
   setInterval(() => {
     mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
@@ -38,39 +44,70 @@ if (started) {
   }
 };
 
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+};
+
+const moveWindow = debounce((direction: string, mainWindow: BrowserWindow, screenWidth: number, screenHeight: number) => {
+  const padding = 10;
+  
+  // Force correct window size first
+  mainWindow.setBounds({
+    width: windowWidth,
+    height: windowHeight,
+    x: mainWindow.getBounds().x,
+    y: mainWindow.getBounds().y
+  });
+
+  // Get current position after ensuring correct size
+  const bounds = mainWindow.getBounds();
+  let x = Math.round(bounds.x);
+  let y = Math.round(bounds.y);
+
+  switch (direction) {
+    case 'top':
+      y = padding;
+      break;
+    case 'bottom':
+      y = Math.round(screenHeight - windowHeight - padding);
+      break;
+    case 'left':
+      x = padding;
+      break;
+    case 'right':
+      x = Math.round(screenWidth - windowWidth - padding);
+      break;
+  }
+
+  // Ensure integer values for position
+  x = Math.round(Math.max(padding, Math.min(x, screenWidth - windowWidth - padding)));
+  y = Math.round(Math.max(padding, Math.min(y, screenHeight - windowHeight - padding)));
+
+  // Use setBounds instead of setPosition to maintain size and position together
+  mainWindow.setBounds({
+    x,
+    y,
+    width: windowWidth,
+    height: windowHeight
+  });
+}, 100);
 
 // express server code for settings | config 
 server.on('connection', (socket:any) => {
   const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
   socket.on('message', (msg:any) => {
     const b = Buffer.from(msg);
-    const direction  = b.toString();
+    const direction = b.toString();
     const mainWindow = BrowserWindow.getAllWindows()[0];
-    let x,y;
-    switch(direction){
-      case 'top':
-        x = mainWindow.getPosition()[0];
-        y = 10;
-        mainWindow.setPosition(x, y);
-        break;
-      case 'bottom':
-        x = mainWindow.getPosition()[0];
-        y = screenHeight - windowHeight;
-        mainWindow.setPosition(x, y);
-        break;
-      case 'left':
-        x = 10;
-        y = mainWindow.getPosition()[1];
-        mainWindow.setPosition(x, y);
-        break;
-      case 'right':
-        x = screenWidth - windowWidth;
-        y = mainWindow.getPosition()[1];
-        mainWindow.setPosition(x, y);
-        break;
-    }
+
+    moveWindow(direction, mainWindow, screenWidth, screenHeight);
   });
 })
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
