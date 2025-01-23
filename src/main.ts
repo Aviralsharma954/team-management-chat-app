@@ -2,21 +2,20 @@ import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import path from 'path';
 import started from 'electron-squirrel-startup';
 import fs from 'fs';
-const express = require('express')
-const server = express()
-const port = 3000;
+import { c } from 'vite/dist/node/types.d-aGj9QkWt';
+const ws = require("ws");
+const server = new ws.Server({port:'3000'})
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
-let config = JSON.parse(fs.readFileSync('./config.json', 'utf8')).config[0];
-const createWindow = () => {
-  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+  const windowWidth = 380;
+  const windowHeight = 500;
+  const createWindow = () => {
   // Create the browser window.
-  const windowWidth = config.width || 380;
-  const windowHeight = config.height || 500;
-  const x = config['position-x'] === 'right' ? screenWidth - windowWidth - 10 : 10;
-  const y = config['position-y'] === 'bottom' ? screenHeight - windowHeight - 10 : 10;
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+  const x = screenWidth - windowWidth - 10;
+  const y = screenHeight - windowHeight - 10;
   const mainWindow = new BrowserWindow({
     width: windowWidth,
     height: windowHeight,
@@ -25,13 +24,6 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
     minimizable: false,
-  });
-  fs.watchFile('./config.json', () => {
-    config = JSON.parse(fs.readFileSync('./config.json', 'utf8')).config[0];
-    const x = config['position-x'] === 'right' ? screenWidth - windowWidth - 10 : 10;
-    const y = config['position-y'] === 'bottom' ? screenHeight - windowHeight - 10 : 10;
-    mainWindow.setPosition(x, y);
-    mainWindow.setSize(config.width, config.height);
   });
   mainWindow.webContents.openDevTools();
   setInterval(() => {
@@ -48,18 +40,36 @@ const createWindow = () => {
 
 
 // express server code for settings | config 
-server.get('/config/:direction', (req:any, res:any) => {
-  const direction  = req.params.direction;
-  if(direction=='left-right'){
-    config = JSON.parse(fs.readFileSync('./config.json', 'utf8')).config[0];
-    config['position-x'] = config['position-x'] === 'right' ? 'left' : 'right';
-  }else{
-    config['position-y'] = config['position-y'] === 'bottom' ? 'top' : 'bottom';
-  }
-  fs.writeFileSync('./config.json', JSON.stringify({ config: [config] }, null, 2));
-});
-server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+server.on('connection', (socket:any) => {
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+  socket.on('message', (msg:any) => {
+    const b = Buffer.from(msg);
+    const direction  = b.toString();
+    const mainWindow = BrowserWindow.getAllWindows()[0];
+    let x,y;
+    switch(direction){
+      case 'top':
+        x = mainWindow.getPosition()[0];
+        y = 10;
+        mainWindow.setPosition(x, y);
+        break;
+      case 'bottom':
+        x = mainWindow.getPosition()[0];
+        y = screenHeight - windowHeight;
+        mainWindow.setPosition(x, y);
+        break;
+      case 'left':
+        x = 10;
+        y = mainWindow.getPosition()[1];
+        mainWindow.setPosition(x, y);
+        break;
+      case 'right':
+        x = screenWidth - windowWidth;
+        y = mainWindow.getPosition()[1];
+        mainWindow.setPosition(x, y);
+        break;
+    }
+  });
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

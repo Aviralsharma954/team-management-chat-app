@@ -1,9 +1,11 @@
 import { ArrowDownUp, ArrowLeft, ArrowLeftRight, Moon, Sun, ChevronRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import fs from 'fs';
+
 const Navbar = () => {
   const [isDark, setIsDark] = useState(false);
-
+  const [positionX, setPositionX] = useState("right");
+  const [positionY, setPositionY] = useState("bottom");
+  const socket = new WebSocket('ws://localhost:3000');
   useEffect(() => {
     const theme = localStorage.getItem('theme');
     setIsDark(theme === 'dark');
@@ -17,8 +19,14 @@ const Navbar = () => {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
-  const toggleWindowPosition = (direction) => {
-      fetch(`http://localhost:3000/config/${direction}`)
+  const toggleWindowPosition = async (direction) => {
+    if(direction === 'left-right') {
+      setPositionX(positionX === 'right' ? 'left' : 'right');
+      socket.send(positionX);
+    }else{
+      setPositionY(positionY === 'bottom' ? 'top' : 'bottom');
+      socket.send(positionY);
+    }
   };
 
   return (

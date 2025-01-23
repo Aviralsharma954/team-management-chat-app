@@ -50,6 +50,7 @@
     "lucide-react": "^0.473.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "vite-plugin-api-routes": "^1.2.0-beta"
+    "vite-plugin-api-routes": "^1.2.0-beta",
+    "ws": "^8.18.0"
   }
 }
